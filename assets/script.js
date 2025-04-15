@@ -101,45 +101,38 @@ function showNode(nodeId) {
     createBackgroundEffects();
 }
 const createBackgroundEffects = () => {
-    const patterns = [
-        '𐎠', '𐎡', '𐎢', '𐎣', '𐎤'
-    ];
-
+    const patterns = ['𐎠', '𐎡', '𐎢'];
     let bgContainer = null;
     let isAnimating = false;
 
     const createPattern = (x, y) => {
-        const char = patterns[Math.floor(Math.random() * patterns.length)];
         const span = document.createElement('span');
-
-        span.textContent = char;
+        span.textContent = patterns[Math.floor(Math.random() * patterns.length)];
         span.style.cssText = `
             position: fixed;
             color: #e8d5a9;
             opacity: 0;
-            font-size: 32px;
+            font-size: 24px;
             top: ${y}px;
             left: ${x}px;
             z-index: -1;
             user-select: none;
             pointer-events: none;
-            text-shadow: 0 0 8px rgba(232, 213, 169, 0.4);
+            text-shadow: 0 0 12px rgba(232, 213, 169, 0.6);
             transform: scale(0.8);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         `;
 
         requestAnimationFrame(() => {
-            span.style.opacity = '0.3';
-            span.style.transform = 'scale(1.1)';
+            span.style.opacity = '0.4';
+            span.style.transform = 'scale(1.2)';
         });
 
         setTimeout(() => {
             span.style.opacity = '0';
-            span.style.transform = 'scale(0.8)';
-            setTimeout(() => {
-                span?.remove();
-            }, 800);
-        }, 2500);
+            span.style.transform = 'scale(0.6)';
+            setTimeout(() => span?.remove(), 600);
+        }, 2000);
 
         return span;
     };
@@ -148,49 +141,36 @@ const createBackgroundEffects = () => {
         if (isAnimating) return;
         isAnimating = true;
 
-        const x = e.clientX;
-        const y = e.clientY;
-
-        const radius = 2;
-        const spacing = 50;
+        const radius = 1;
+        const spacing = 40;
 
         for (let i = -radius; i <= radius; i++) {
             for (let j = -radius; j <= radius; j++) {
-                if (Math.random() > 0.5) continue;
+                if (Math.random() > 0.7) continue;
 
-                const distance = Math.sqrt(i * i + j * j);
-                if (distance > radius) continue;
+                const offsetX = e.clientX + (i * spacing) + (Math.random() * 8 - 4);
+                const offsetY = e.clientY + (j * spacing) + (Math.random() * 8 - 4);
 
-                const offsetX = x + (i * spacing) + (Math.random() * 10 - 5);
-                const offsetY = y + (j * spacing) + (Math.random() * 10 - 5);
-
-                setTimeout(() => {
-                    bgContainer.appendChild(createPattern(offsetX, offsetY));
-                }, distance * 100);
+                bgContainer.appendChild(createPattern(offsetX, offsetY));
             }
         }
 
-        setTimeout(() => {
-            isAnimating = false;
-        }, 100);
+        setTimeout(() => isAnimating = false, 80);
     };
 
     const initializeBackground = () => {
-        if (bgContainer) {
-            document.body.removeChild(bgContainer);
-        }
+        if (bgContainer) document.body.removeChild(bgContainer);
 
         bgContainer = document.createElement('div');
         bgContainer.style.cssText = `
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100vw;
             height: 100vh;
             z-index: -1;
             overflow: hidden;
             pointer-events: none;
-            perspective: 1000px;
+            perspective: 800px;
         `;
 
         document.body.appendChild(bgContainer);
@@ -198,7 +178,6 @@ const createBackgroundEffects = () => {
     };
 
     initializeBackground();
-
     return () => {
         document.removeEventListener('mousemove', handleMouseMove);
         bgContainer?.remove();
