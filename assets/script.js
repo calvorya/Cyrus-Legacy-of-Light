@@ -113,86 +113,123 @@ function showNode(nodeId) {
     createBackgroundEffects();
 }
 const createBackgroundEffects = () => {
-    const patterns = ['𐎠', '𐎡', '𐎢', '𐎤𐎢𐎽𐎢𐏁', '𐎱𐎠𐎼𐎿'];
-    let bgContainer = null;
-    let isAnimating = false;
-
-    const createPattern = (x, y) => {
-        const span = document.createElement('span');
-        span.textContent = patterns[Math.floor(Math.random() * patterns.length)];
-        span.style.cssText = `
-            position: fixed;
-            color: #e8d5a9;
-            opacity: 0;
-            font-size: 24px;
-            top: ${y}px;
-            left: ${x}px;
-            z-index: -1;
-            user-select: none;
-            pointer-events: none;
-            text-shadow: 0 0 12px rgba(232, 213, 169, 0.6);
-            transform: scale(0.8);
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        `;
-
-        requestAnimationFrame(() => {
-            span.style.opacity = '0.4';
-            span.style.transform = 'scale(1.2)';
-        });
-
-        setTimeout(() => {
-            span.style.opacity = '0';
-            span.style.transform = 'scale(0.6)';
-            setTimeout(() => span?.remove(), 600);
-        }, 2000);
-
-        return span;
+    const patterns = ['𐎠', '𐎡', '𐎢', '👑', '⚔️', '🏰', '🗡️', '🛡️'];
+    const state = {
+        bgContainer: null,
+        isAnimating: false,
+        mouseX: window.innerWidth / 2,
+        mouseY: window.innerHeight / 2
     };
 
-    const handleMouseMove = (e) => {
-        if (isAnimating) return;
-        isAnimating = true;
+    document.addEventListener('mousemove', (e) => {
+        state.mouseX = e.clientX;
+        state.mouseY = e.clientY;
+    });
 
-        const radius = 1;
-        const spacing = 40;
+    const createPattern = () => {
+        const pattern = document.createElement('span');
+        pattern.textContent = patterns[Math.floor(Math.random() * patterns.length)];
+        pattern.classList.add('background-pattern');
 
-        for (let i = -radius; i <= radius; i++) {
-            for (let j = -radius; j <= radius; j++) {
-                if (Math.random() > 0.4) continue;
+        const rotation = Math.random() * 360;
+        const randomX = Math.random() * window.innerWidth;
+        const randomY = Math.random() * window.innerHeight;
+        const scale = 0.8 + Math.random() * 0.8;
+        const duration = 15 + Math.random() * 10; 
 
-                const offsetX = e.clientX + (i * spacing) + (Math.random() * 8 - 4);
-                const offsetY = e.clientY + (j * spacing) + (Math.random() * 8 - 4);
+        Object.assign(pattern.style, {
+            position: 'fixed',
+            color: 'var(--pattern-color, #d4c8a1)',
+            opacity: '0',
+            fontSize: '24px',
+            top: `${randomY}px`,
+            left: `${randomX}px`,
+            zIndex: '-1',
+            userSelect: 'none',
+            pointerEvents: 'none',
+            textShadow: '0 0 12px rgba(212, 200, 161, 0.6)',
+            transform: `rotate(${rotation}deg) scale(${scale})`,
+            transition: 'all 3s ease-out', 
+            animation: `floatToMouse ${duration}s ease-in-out infinite`
+        });
 
-                bgContainer.appendChild(createPattern(offsetX, offsetY));
-            }
+        if (!document.querySelector('#background-animations')) {
+            const styleSheet = document.createElement('style');
+            styleSheet.id = 'background-animations';
+            styleSheet.textContent = `
+                @keyframes floatToMouse {
+                    0% { transform: translate(0, 0) rotate(${rotation}deg) scale(${scale}); }
+                    50% { transform: translate(calc(${state.mouseX}px - 50%), calc(${state.mouseY}px - 50%)) rotate(${rotation + 180}deg) scale(${scale}); }
+                    100% { transform: translate(0, 0) rotate(${rotation + 360}deg) scale(${scale}); }
+                }
+            `;
+            document.head.appendChild(styleSheet);
         }
 
-        setTimeout(() => isAnimating = false, 80);
+        requestAnimationFrame(() => {
+            pattern.style.opacity = '0.4';
+        });
+
+        const updatePosition = () => {
+            if (!pattern.isConnected) return;
+            
+            const rect = pattern.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const angleToMouse = Math.atan2(state.mouseY - centerY, state.mouseX - centerX);
+            const distanceToMouse = Math.hypot(state.mouseX - centerX, state.mouseY - centerY);
+            
+            const moveX = Math.cos(angleToMouse) * (distanceToMouse * 0.02);
+            const moveY = Math.sin(angleToMouse) * (distanceToMouse * 0.02);
+            
+            pattern.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${rotation + (Date.now() / 50)}deg) scale(${scale})`;
+            
+            requestAnimationFrame(updatePosition);
+        };
+
+        updatePosition();
+
+        setTimeout(() => {
+            pattern?.remove();
+        }, duration * 1000);
+
+        return pattern;
+    };
+
+    const spawnPatterns = () => {
+        if (!state.bgContainer) return;
+        
+        const numPatterns = 3 + Math.floor(Math.random() * 4);
+        for (let i = 0; i < numPatterns; i++) {
+            state.bgContainer.appendChild(createPattern());
+        }
+
+        setTimeout(spawnPatterns, 3000 + Math.random() * 2000);
     };
 
     const initializeBackground = () => {
-        if (bgContainer) document.body.removeChild(bgContainer);
+        if (state.bgContainer) state.bgContainer.remove();
 
-        bgContainer = document.createElement('div');
-        bgContainer.style.cssText = `
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            overflow: hidden;
-            pointer-events: none;
-            perspective: 800px;
-        `;
+        state.bgContainer = document.createElement('div');
+        Object.assign(state.bgContainer.style, {
+            position: 'fixed',
+            inset: '0',
+            width: '100vw',
+            height: '100vh',
+            zIndex: '-1',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+            perspective: '1000px'
+        });
 
-        document.body.appendChild(bgContainer);
-        document.addEventListener('mousemove', handleMouseMove);
+        document.body.appendChild(state.bgContainer);
+        spawnPatterns();
     };
 
     initializeBackground();
     return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        bgContainer?.remove();
+        state.bgContainer?.remove();
     };
 };
 
