@@ -95,7 +95,7 @@ function showNode(nodeId) {
     createBackgroundEffects();
 }
 const createBackgroundEffects = () => {
-    const patterns = ['𐎠', '𐎡', '𐎢'];
+    const patterns = ['𐎠', '𐎡', '𐎢', '𐎤𐎢𐎽𐎢𐏁', '𐎱𐎠𐎼𐎿'];
     let bgContainer = null;
     let isAnimating = false;
 
@@ -140,7 +140,7 @@ const createBackgroundEffects = () => {
 
         for (let i = -radius; i <= radius; i++) {
             for (let j = -radius; j <= radius; j++) {
-                if (Math.random() > 0.7) continue;
+                if (Math.random() > 0.4) continue;
 
                 const offsetX = e.clientX + (i * spacing) + (Math.random() * 8 - 4);
                 const offsetY = e.clientY + (j * spacing) + (Math.random() * 8 - 4);
