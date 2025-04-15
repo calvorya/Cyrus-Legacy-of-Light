@@ -1,0 +1,73 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    direction: rtl;
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+    color: #ffffff;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.container {
+    background: rgba(40, 40, 40, 0.95);
+    border-radius: 16px;
+    padding: 2.5rem;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#text {
+    margin-bottom: 2rem;
+    line-height: 2;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+#options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.2em;
+    width: 100%;
+}
+
+.option {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: linear-gradient(145deg, #3a3a3a, #4a4a4a);
+    border: none;
+    color: #ffffff;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: "Vazirmatn";
+    font-size: 1rem;
+    min-width: 150px;
+    text-align: center;
+}
+
+.option:hover {
+    background: linear-gradient(145deg, #4a4a4a, #5a5a5a);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
