@@ -25,6 +25,11 @@
         "assets/images/intro/1.jpg",
         "assets/images/intro/2.jpg",
         "assets/images/intro/3.jpg"
+      ],
+      "image_text": [
+        "نگاره ایشتوویگو، پادشاه ماد، در حال فرمان دادن و گسیل داشتن هارپاگ برای کشتن کوروش خردسال",
+        "نقاشی دوران کودکی کوروش اثر سباستیانو ریچی",
+        "شکست آستیاگ از کوروش (کوروش و هارپاگ در مرکز و آستیاگ در سمت چپ نگاره به‌تصویر کشیده شده‌اند)، نقاشی از قرن ۱۸ میلادی، موزه هنرهای زیبای بوستون."
       ]
     },
     "negotiate": {
@@ -103,6 +108,10 @@
       "image": [
         "assets/images/council/1.jpg",
         "assets/images/council/2.jpg"
+      ],
+      "image_text": [
+        "نگاره تخت جمشید",
+        "نگاره کوروش بزرگ"
       ]
     },
     "power_sharing": {
@@ -230,6 +239,12 @@
           "text": "جمع‌آوری اطلاعات از دربار ماد",
           "next": "gather_intel"
         }
+      ],
+      "image": [
+        "assets/images/delay/1.jpg"
+      ],
+      "image_text": [
+        "من کوروش، شاه هخامنشی هستم"
       ]
     },
     "intel_and_allies": {

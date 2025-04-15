@@ -41,7 +41,11 @@ function showNode(nodeId) {
             imageContainer.style.display = 'block';
         }
         const images = imageContainer.querySelectorAll('img');
+        let imageText = null;
+        let imageTextCount = 0;
         images.forEach(img => {
+            let imageTextInnerText = currentNode.image_text[imageTextCount] || "تصویر";
+            imageTextCount++;
             img.style.cursor = 'pointer';
             img.onclick = () => {
                 const overlay = document.createElement('div');
@@ -73,6 +77,18 @@ function showNode(nodeId) {
                 fullImg.style.maxHeight = '90%';
                 fullImg.style.objectFit = 'contain';
 
+                const imageText = document.createElement('div');
+                imageText.style.position = 'absolute';
+                imageText.style.bottom = '20px';
+                imageText.style.left = '50%';
+                imageText.style.transform = 'translateX(-50%)';
+                imageText.style.color = 'white';
+                imageText.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                imageText.style.padding = '10px 20px';
+                imageText.style.borderRadius = '5px';
+                imageText.style.fontSize = '16px';
+                imageText.innerText = imageTextInnerText;
+
                 overlay.onclick = (e) => {
                     if (e.target === overlay) {
                         document.body.removeChild(overlay);
@@ -85,11 +101,13 @@ function showNode(nodeId) {
 
                 overlay.appendChild(closeBtn);
                 overlay.appendChild(fullImg);
+                overlay.appendChild(imageText);
                 document.body.appendChild(overlay);
             };
         });
     }
     catch { }
+
 
 
     createBackgroundEffects();
