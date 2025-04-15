@@ -3,7 +3,7 @@ let story = {};
 
 async function loadStory() {
     document.getElementById("start").style.display = "none";
-    const res = await fetch('/assets/story.json');
+    const res = await fetch('./assets/story.json');
     story = await res.json();
     showNode(story.start);
 }
