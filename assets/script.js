@@ -8,10 +8,7 @@ async function loadStory() {
 
     const hash = window.location.hash.slice(1);
     if (hash) {
-        const startGameBtn = document.getElementById('start-game');
-        if (startGameBtn) {
-            startGameBtn.innerText = 'ادامه بازی';
-        }
+        document.getElementById('start-game').innerHTML = "ادامه بازی";
     }
     if (hash && story.nodes[hash]) {
         showNode(hash);
