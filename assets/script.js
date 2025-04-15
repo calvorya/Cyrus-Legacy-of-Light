@@ -5,8 +5,14 @@ async function loadStory() {
     document.getElementById("start").style.display = "none";
     const res = await fetch('./assets/story.json');
     story = await res.json();
-    
+
     const hash = window.location.hash.slice(1);
+    if (hash) {
+        const startGameBtn = document.getElementById('start-game');
+        if (startGameBtn) {
+            startGameBtn.innerText = 'ادامه بازی';
+        }
+    }
     if (hash && story.nodes[hash]) {
         showNode(hash);
     } else {
@@ -16,7 +22,7 @@ async function loadStory() {
 
 function showNode(nodeId) {
     window.location.hash = nodeId;
-    
+
     currentNode = story.nodes[nodeId];
     document.getElementById('text').innerText = currentNode.text;
     const optionsContainer = document.getElementById('options');
