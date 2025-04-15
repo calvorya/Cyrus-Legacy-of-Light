@@ -7,9 +7,6 @@ async function loadStory() {
     story = await res.json();
 
     const hash = window.location.hash.slice(1);
-    if (hash) {
-        document.getElementById('start-game').innerHTML = "ادامه بازی";
-    }
     if (hash && story.nodes[hash]) {
         showNode(hash);
     } else {
@@ -187,7 +184,10 @@ window.addEventListener('hashchange', () => {
         showNode(hash);
     }
 });
-
+const hash = window.location.hash.slice(1);
+if (hash) {
+    document.getElementById('start-game').innerHTML = "ادامه بازی";
+}
 document.getElementById("start-game").onclick = () => {
     loadStory();
 }
