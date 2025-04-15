@@ -34,6 +34,10 @@
           "text": "تعلل و ارسال هدیه برای آرام کردن آستیاگ",
           "next": "delay"
         }
+      ],
+      "image": [
+        "assets/images/council/1.jpg",
+        "assets/images/council/2.jpg"
       ]
     },
     "harpagus": {
