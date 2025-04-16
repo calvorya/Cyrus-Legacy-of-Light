@@ -1,5 +1,11 @@
 let currentNode = null;
 let story = {};
+let playerStats = {
+    military: 0,
+    diplomacy: 0,
+    treasury: 100,
+    allies: []
+};
 
 async function loadStory() {
     document.getElementById("start").style.display = "none";
@@ -13,21 +19,112 @@ async function loadStory() {
         showNode(story.start);
     }
 }
+function saveStats() {
+    localStorage.setItem('playerStats', JSON.stringify(playerStats));
+}
+function loadStats() {
+    const savedStats = localStorage.getItem('playerStats');
+    if (savedStats) {
+        playerStats = JSON.parse(savedStats);
+    }
+}
+function updateStats() {
+    saveStats();
+    const statsContainer = document.getElementById('stats');
+    statsContainer.style.display = '';
+    if (!statsContainer) {
+        const container = document.createElement('div');
+        container.id = 'stats';
+        container.className = 'stats-container';
+
+        container.innerHTML = `
+            <div class="stat">
+                <span class="stat-label">نیروی نظامی:</span>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${(playerStats.military / 100) * 100}%"></div>
+                    <span class="stat-value">${playerStats.military}</span>
+                </div>
+            </div>
+            <div class="stat">
+                <span class="stat-label">دیپلماسی:</span>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${(playerStats.diplomacy / 100) * 100}%"></div>
+                    <span class="stat-value">${playerStats.diplomacy}</span>
+                </div>
+            </div>
+            <div class="stat">
+                <span class="stat-label">خزانه:</span>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${(playerStats.treasury / 1000) * 100}%"></div>
+                    <span class="stat-value">${playerStats.treasury}</span>
+                </div>
+            </div>
+            <div class="stat">
+                <span class="stat-label">متحدان:</span>
+                <div class="allies-container">
+                    <span class="stat-value">${playerStats.allies.join(', ') || 'هیچ'}</span>
+                </div>
+            </div>
+        `;
+
+        document.body.insertBefore(container, document.getElementById('text'));
+    } else {
+        const updateProgressBar = (index, value, max) => {
+            const bar = statsContainer.querySelector(`.stat:nth-child(${index}) .progress`);
+            bar.style.width = `${(value / max) * 100}%`;
+        };
+
+        updateProgressBar(1, playerStats.military, 100);
+        updateProgressBar(2, playerStats.diplomacy, 100);
+        updateProgressBar(3, playerStats.treasury, 1000);
+        statsContainer.querySelector('.stat:nth-child(4) .stat-value').textContent = playerStats.allies.join(', ') || 'هیچ';
+    }
+}
 
 function showNode(nodeId) {
     window.location.hash = nodeId;
 
     currentNode = story.nodes[nodeId];
+
+    if (currentNode.effects) {
+        if (currentNode.effects.military) playerStats.military += currentNode.effects.military;
+        if (currentNode.effects.diplomacy) playerStats.diplomacy += currentNode.effects.diplomacy;
+        if (currentNode.effects.treasury) playerStats.treasury += currentNode.effects.treasury;
+        if (currentNode.effects.allies) playerStats.allies = [...new Set([...playerStats.allies, ...currentNode.effects.allies])];
+    }
+
+    updateStats();
+
     document.getElementById('text').innerText = currentNode.text;
     const optionsContainer = document.getElementById('options');
     optionsContainer.innerHTML = '';
+
     currentNode.options.forEach(opt => {
         const btn = document.createElement('button');
         btn.className = 'option';
+
+        if (opt.requires) {
+            const canChoose = Object.entries(opt.requires).every(([stat, value]) => playerStats[stat] >= value);
+            if (!canChoose) {
+                btn.classList.add('disabled');
+                btn.disabled = true;
+                btn.title = 'نیازمندی‌های کافی را ندارید';
+                btn.style.cursor = 'not-allowed';
+            }
+        }
+
         btn.innerText = opt.text;
         btn.onclick = () => showNode(opt.next);
         optionsContainer.appendChild(btn);
     });
+
+    if (currentNode.title) {
+        document.querySelectorAll('h2').forEach(el => el.remove());
+        const titleElement = document.createElement('h2');
+        titleElement.innerText = currentNode.title;
+        document.getElementById('text').insertAdjacentElement('beforebegin', titleElement);
+    }
+
     try {
         const imageContainer = document.getElementById('image');
         imageContainer.style.display = 'none';
@@ -49,44 +146,18 @@ function showNode(nodeId) {
             img.style.cursor = 'pointer';
             img.onclick = () => {
                 const overlay = document.createElement('div');
-                overlay.style.position = 'fixed';
-                overlay.style.top = '0';
-                overlay.style.left = '0';
-                overlay.style.width = '100%';
-                overlay.style.height = '100%';
-                overlay.style.backgroundColor = 'rgba(0,0,0,0.9)';
-                overlay.style.display = 'flex';
-                overlay.style.justifyContent = 'center';
-                overlay.style.alignItems = 'center';
-                overlay.style.zIndex = '1000';
+                overlay.className = 'image-popup-overlay';
 
                 const closeBtn = document.createElement('button');
                 closeBtn.innerHTML = '×';
-                closeBtn.style.position = 'absolute';
-                closeBtn.style.top = '20px';
-                closeBtn.style.right = '20px';
-                closeBtn.style.background = 'none';
-                closeBtn.style.border = 'none';
-                closeBtn.style.color = 'white';
-                closeBtn.style.fontSize = '30px';
-                closeBtn.style.cursor = 'pointer';
+                closeBtn.className = 'image-popup-close';
 
                 const fullImg = document.createElement('img');
                 fullImg.src = img.src;
-                fullImg.style.maxWidth = '90%';
-                fullImg.style.maxHeight = '90%';
-                fullImg.style.objectFit = 'contain';
+                fullImg.className = 'image-popup-img';
 
                 const imageText = document.createElement('div');
-                imageText.style.position = 'absolute';
-                imageText.style.bottom = '20px';
-                imageText.style.left = '50%';
-                imageText.style.transform = 'translateX(-50%)';
-                imageText.style.color = 'white';
-                imageText.style.backgroundColor = 'rgba(0,0,0,0.7)';
-                imageText.style.padding = '10px 20px';
-                imageText.style.borderRadius = '5px';
-                imageText.style.fontSize = '16px';
+                imageText.className = 'image-popup-text';
                 imageText.innerText = imageTextInnerText;
 
                 overlay.onclick = (e) => {
@@ -108,12 +179,11 @@ function showNode(nodeId) {
     }
     catch { }
 
-
-
     createBackgroundEffects();
 }
+
 const createBackgroundEffects = () => {
-    const patterns = ['𐎠', '𐎡', '𐎢', '👑', '⚔️', '🏰', '🗡️', '🛡️'];
+    const patterns = ['𐎠', '𐎡', '𐎢', '👑', '⚔️', '🏰', '🗡️', '🛡️', '✨', '🌟'];
     const state = {
         bgContainer: null,
         isAnimating: false,
@@ -134,23 +204,23 @@ const createBackgroundEffects = () => {
         const rotation = Math.random() * 360;
         const randomX = Math.random() * window.innerWidth;
         const randomY = Math.random() * window.innerHeight;
-        const scale = 0.8 + Math.random() * 0.8;
-        const duration = 15 + Math.random() * 10; 
+        const scale = 0.6 + Math.random() * 0.8;
+        const duration = 12 + Math.random() * 8;
 
         Object.assign(pattern.style, {
             position: 'fixed',
-            color: 'var(--pattern-color, #d4c8a1)',
+            color: 'var(--pattern-color, rgba(255, 215, 0, 0.4))',
             opacity: '0',
-            fontSize: '24px',
+            fontSize: '28px',
             top: `${randomY}px`,
             left: `${randomX}px`,
             zIndex: '-1',
             userSelect: 'none',
             pointerEvents: 'none',
-            textShadow: '0 0 12px rgba(212, 200, 161, 0.6)',
+            textShadow: '0 0 15px rgba(255, 215, 0, 0.6)',
             transform: `rotate(${rotation}deg) scale(${scale})`,
-            transition: 'all 3s ease-out', 
-            animation: `floatToMouse ${duration}s ease-in-out infinite`
+            transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+            animation: `floatToMouse ${duration}s cubic-bezier(0.4, 0, 0.2, 1) infinite`
         });
 
         if (!document.querySelector('#background-animations')) {
@@ -158,40 +228,54 @@ const createBackgroundEffects = () => {
             styleSheet.id = 'background-animations';
             styleSheet.textContent = `
                 @keyframes floatToMouse {
-                    0% { transform: translate(0, 0) rotate(${rotation}deg) scale(${scale}); }
-                    50% { transform: translate(calc(${state.mouseX}px - 50%), calc(${state.mouseY}px - 50%)) rotate(${rotation + 180}deg) scale(${scale}); }
-                    100% { transform: translate(0, 0) rotate(${rotation + 360}deg) scale(${scale}); }
+                    0% { 
+                        transform: translate(0, 0) rotate(${rotation}deg) scale(${scale});
+                        filter: hue-rotate(0deg);
+                    }
+                    50% { 
+                        transform: translate(calc(${state.mouseX}px - 50%), calc(${state.mouseY}px - 50%)) rotate(${rotation + 180}deg) scale(${scale * 1.2});
+                        filter: hue-rotate(180deg);
+                    }
+                    100% { 
+                        transform: translate(0, 0) rotate(${rotation + 360}deg) scale(${scale});
+                        filter: hue-rotate(360deg);
+                    }
                 }
             `;
             document.head.appendChild(styleSheet);
         }
 
         requestAnimationFrame(() => {
-            pattern.style.opacity = '0.4';
+            pattern.style.opacity = '0.6';
         });
 
         const updatePosition = () => {
             if (!pattern.isConnected) return;
-            
+
             const rect = pattern.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-            
+
             const angleToMouse = Math.atan2(state.mouseY - centerY, state.mouseX - centerX);
             const distanceToMouse = Math.hypot(state.mouseX - centerX, state.mouseY - centerY);
-            
-            const moveX = Math.cos(angleToMouse) * (distanceToMouse * 0.02);
-            const moveY = Math.sin(angleToMouse) * (distanceToMouse * 0.02);
-            
-            pattern.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${rotation + (Date.now() / 50)}deg) scale(${scale})`;
-            
+
+            const moveX = Math.cos(angleToMouse) * (distanceToMouse * 0.03);
+            const moveY = Math.sin(angleToMouse) * (distanceToMouse * 0.03);
+
+            pattern.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${rotation + (Date.now() / 40)}deg) scale(${scale})`;
+            pattern.style.filter = `hue-rotate(${(Date.now() / 50) % 360}deg)`;
+
             requestAnimationFrame(updatePosition);
         };
 
         updatePosition();
 
         setTimeout(() => {
-            pattern?.remove();
+            if (pattern.isConnected) {
+                pattern.style.opacity = '0';
+                pattern.style.transform = `scale(0.1)`;
+                setTimeout(() => pattern?.remove(), 800);
+            }
         }, duration * 1000);
 
         return pattern;
@@ -199,17 +283,22 @@ const createBackgroundEffects = () => {
 
     const spawnPatterns = () => {
         if (!state.bgContainer) return;
-        
-        const numPatterns = 3 + Math.floor(Math.random() * 4);
+
+        const numPatterns = 4 + Math.floor(Math.random() * 4);
         for (let i = 0; i < numPatterns; i++) {
-            state.bgContainer.appendChild(createPattern());
+            setTimeout(() => {
+                state.bgContainer.appendChild(createPattern());
+            }, i * 200);
         }
 
-        setTimeout(spawnPatterns, 3000 + Math.random() * 2000);
+        setTimeout(spawnPatterns, 2500 + Math.random() * 1500);
     };
 
     const initializeBackground = () => {
-        if (state.bgContainer) state.bgContainer.remove();
+        if (state.bgContainer) {
+            state.bgContainer.style.opacity = '0';
+            setTimeout(() => state.bgContainer.remove(), 500);
+        }
 
         state.bgContainer = document.createElement('div');
         Object.assign(state.bgContainer.style, {
@@ -220,16 +309,24 @@ const createBackgroundEffects = () => {
             zIndex: '-1',
             overflow: 'hidden',
             pointerEvents: 'none',
-            perspective: '1000px'
+            perspective: '1500px',
+            transition: 'opacity 0.5s ease',
+            opacity: '0'
         });
 
         document.body.appendChild(state.bgContainer);
+        requestAnimationFrame(() => {
+            state.bgContainer.style.opacity = '1';
+        });
         spawnPatterns();
     };
 
     initializeBackground();
     return () => {
-        state.bgContainer?.remove();
+        if (state.bgContainer) {
+            state.bgContainer.style.opacity = '0';
+            setTimeout(() => state.bgContainer?.remove(), 500);
+        }
     };
 };
 
@@ -239,10 +336,13 @@ window.addEventListener('hashchange', () => {
         showNode(hash);
     }
 });
+
 const hash = window.location.hash.slice(1);
 if (hash) {
     document.getElementById('start-game').innerHTML = "ادامه بازی";
 }
+
 document.getElementById("start-game").onclick = () => {
+    loadStats();
     loadStory();
 }

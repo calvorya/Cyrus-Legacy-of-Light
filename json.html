@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fa">
+
+<head>
+    <meta charset="UTF-8">
+    <title>درخت تصمیم کوروش</title>
+    <style>
+        body {
+            background: #f5f5f5;
+            font-family: sans-serif;
+            direction: rtl;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        #tree-container {
+            position: relative; 
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: visible;
+        }
+
+        .level {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 60px;
+            padding: 0 20px;
+            width: 100%;
+            position: relative;
+        }
+
+        .node {
+            background: #ffffff;
+            border: 2px solid #ccc;
+            border-radius: 16px;
+            padding: 16px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: 0.3s;
+            z-index: 1;
+        }
+
+        .level:nth-child(1) .node {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .level:nth-child(2) .node {
+            background: #f3e5f5;
+            border-color: #9c27b0;
+        }
+
+        .level:nth-child(3) .node {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .level:nth-child(4) .node {
+            background: #fff3e0;
+            border-color: #ff9800;
+        }
+
+        .level:nth-child(5) .node {
+            background: #fce4ec;
+            border-color: #e91e63;
+        }
+
+        .node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .connector {
+            stroke-width: 2;
+            fill: none;
+            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2));
+            pointer-events: none;
+        }
+
+        .connector:nth-of-type(4n+1) {
+            stroke: #2196f3;
+        }
+
+        .connector:nth-of-type(4n+2) {
+            stroke: #9c27b0;
+        }
+
+        .connector:nth-of-type(4n+3) {
+            stroke: #4caf50;
+        }
+
+        .connector:nth-of-type(4n+4) {
+            stroke: #ff9800;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 8px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .option-button {
+            background: rgba(255,255,255,0.9);
+            border: 2px solid;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .level:nth-child(1) .option-button {
+            border-color: #2196f3;
+            color: #1565c0;
+        }
+
+        .level:nth-child(2) .option-button {
+            border-color: #9c27b0;
+            color: #6a1b9a;
+        }
+
+        .level:nth-child(3) .option-button {
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .level:nth-child(4) .option-button {
+            border-color: #ff9800;
+            color: #e65100;
+        }
+
+        .level:nth-child(5) .option-button {
+            border-color: #e91e63;
+            color: #ad1457;
+        }
+
+        .option-button:hover {
+            transform: scale(1.02);
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        #lines-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: visible;
+        }
+
+        #lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .node p {
+            margin: 8px 0;
+            line-height: 1.4;
+            font-size: 14px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .node strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2 style="text-align:center; color: #1565c0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px;">درخت تصمیم کوروش</h2>
+    <div id="tree-container"></div>
+
+    <div id="lines-container">
+        <svg id="lines" preserveAspectRatio="none"></svg>
+    </div>
+
+    <script>
+        let story;
+        let levels = [];
+
+        fetch('./assets/story.json')
+            .then(res => res.json())
+            .then(data => {
+                story = data;
+                createTree();
+            });
+
+        const container = document.getElementById('tree-container');
+        const svg = document.getElementById('lines');
+        const nodePositions = new Map();
+
+        function createTree() {
+            levels = [];
+            container.innerHTML = '';
+            nodePositions.clear();
+            
+            createNodesForLevel(story.start, 0);
+            
+            levels.forEach((levelNodes, levelIndex) => {
+                const levelDiv = document.createElement('div');
+                levelDiv.className = 'level';
+                container.appendChild(levelDiv);
+                
+                levelNodes.forEach(nodeId => {
+                    const node = createNode(nodeId);
+                    if (node) {
+                        levelDiv.appendChild(node);
+                    }
+                });
+            });
+
+            requestAnimationFrame(() => {
+                drawAllConnections();
+            });
+        }
+
+        function createNodesForLevel(id, level, visited = new Set()) {
+            if (visited.has(id) || level >= 5) return;
+            visited.add(id);
+            
+            if (!levels[level]) {
+                levels[level] = [];
+            }
+            
+            if (!levels[level].includes(id)) {
+                levels[level].push(id);
+                
+                const nodeData = story.nodes[id];
+                if (nodeData && nodeData.options) {
+                    nodeData.options.forEach(opt => {
+                        if (!visited.has(opt.next)) {
+                            createNodesForLevel(opt.next, level + 1, visited);
+                        }
+                    });
+                }
+            }
+        }
+
+        function createNode(id) {
+            const nodeData = story.nodes[id];
+            if (!nodeData) return null;
+
+            const node = document.createElement('div');
+            node.className = 'node';
+            node.dataset.id = id;
+            
+            const content = document.createElement('div');
+            content.innerHTML = `<strong>${nodeData.title}</strong><p>${nodeData.text}</p>`;
+            node.appendChild(content);
+
+            if (nodeData.options && nodeData.options.length > 0) {
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'options-container';
+                nodeData.options.forEach(opt => {
+                    const button = document.createElement('button');
+                    button.className = 'option-button';
+                    button.textContent = opt.text;
+                    button.onclick = () => {
+                        const nextNode = document.querySelector(`[data-id="${opt.next}"]`);
+                        if (nextNode) {
+                            nextNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            
+                            // Highlight target node
+                            nextNode.style.transition = 'all 0.3s';
+                            nextNode.style.backgroundColor = '#e3f2fd';
+                            nextNode.style.borderColor = '#1565c0';
+                            nextNode.style.boxShadow = '0 0 15px rgba(21, 101, 192, 0.3)';
+                            
+                            // Reset after 10 seconds
+                            setTimeout(() => {
+                                nextNode.style.backgroundColor = '';
+                                nextNode.style.borderColor = '';
+                                nextNode.style.boxShadow = '';
+                            }, 10000);
+
+                            // Highlight connection
+                            const connection = svg.querySelector(`path[data-from="${opt.next}"]`);
+                            if (connection) {
+                                connection.style.strokeWidth = '3px';
+                                connection.style.stroke = '#1565c0';
+                                setTimeout(() => {
+                                    connection.style.strokeWidth = '';
+                                    connection.style.stroke = '';
+                                }, 10000);
+                            }
+                        }
+                    };
+                    optionsContainer.appendChild(button);
+                });
+                node.appendChild(optionsContainer);
+            }
+
+            return node;
+        }
+
+        function drawAllConnections() {
+            svg.innerHTML = '';
+            
+            const containerRect = container.getBoundingClientRect();
+            svg.style.width = containerRect.width + 'px';
+            svg.style.height = containerRect.height + 'px';
+            
+            levels.forEach((levelNodes, levelIndex) => {
+                levelNodes.forEach(nodeId => {
+                    const nodeData = story.nodes[nodeId];
+                    if (nodeData && nodeData.options) {
+                        nodeData.options.forEach(opt => {
+                            drawConnection(nodeId, opt.next);
+                        });
+                    }
+                });
+            });
+        }
+
+        function drawConnection(fromId, toId) {
+            const fromNode = document.querySelector(`[data-id="${fromId}"]`);
+            const toNode = document.querySelector(`[data-id="${toId}"]`);
+            
+            if (!fromNode || !toNode) return;
+
+            const containerRect = container.getBoundingClientRect();
+            const fromRect = fromNode.getBoundingClientRect();
+            const toRect = toNode.getBoundingClientRect();
+
+            const fromX = fromRect.left + fromRect.width/2 - containerRect.left;
+            const fromY = fromRect.bottom - containerRect.top;
+            const toX = toRect.left + toRect.width/2 - containerRect.left;
+            const toY = toRect.top - containerRect.top;
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            
+            // Improved curve control points
+            const distance = Math.abs(toY - fromY);
+            const controlPoint1X = fromX;
+            const controlPoint1Y = fromY + distance * 0.3;
+            const controlPoint2X = toX;
+            const controlPoint2Y = toY - distance * 0.3;
+
+            const curve = `M ${fromX},${fromY} 
+                          C ${controlPoint1X},${controlPoint1Y} 
+                            ${controlPoint2X},${controlPoint2Y} 
+                            ${toX},${toY}`;
+            
+            path.setAttribute("d", curve);
+            path.setAttribute("data-from", fromId);
+            path.setAttribute("data-to", toId);
+            path.classList.add("connector");
+            path.style.transition = 'all 0.3s';
+            svg.appendChild(path);
+        }
+
+        const resizeObserver = new ResizeObserver(entries => {
+            requestAnimationFrame(drawAllConnections);
+        });
+
+        resizeObserver.observe(container);
+
+        window.addEventListener('scroll', () => {
+            requestAnimationFrame(drawAllConnections);
+        });
+
+        window.addEventListener('resize', () => {
+            requestAnimationFrame(drawAllConnections);
+        });
+    </script>
+
+</body>
+
+</html>

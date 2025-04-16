@@ -30,10 +30,38 @@
 </head>
 
 <body>
+    <div class="stats-container" style="display: none;" id="stats">
+        <div class="stat">
+            <span class="stat-label">نیروی نظامی:</span>
+            <div class="progress-bar">
+                <div class="progress" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="stat">
+            <span class="stat-label">دیپلماسی:</span>
+            <div class="progress-bar">
+                <div class="progress" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="stat">
+            <span class="stat-label">خزانه:</span>
+            <div class="progress-bar">
+                <div class="progress" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="stat">
+            <span class="stat-label">متحدان:</span>
+            <div class="allies-container">
+                <span class="stat-value" id="allies-stat">هیچ</span>
+            </div>
+        </div>
+    </div>
     <div id="start" class="text-center container-fluid">
         <img src="./assets/images/logo.svg" alt="Cyrus: Legacy of Light" style="width: 100px; height: 100px;">
         <p>👑 Cyrus: Legacy of Light 👑<br>
             یک بازی داستانی ماجراجویانه (Text Adventure) درباره‌ی کوروش کبیر، بنیان‌گذار امپراتوری پارس</p>
+        <br>
+        <p>فصل اول رستاخیز پارس</p>
         <br>
         <div class="options">
             <button id="start-game" class="option">شروع بازی</button>
