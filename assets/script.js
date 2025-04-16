@@ -3,7 +3,7 @@ let story = {};
 let playerStats = {
     military: 0,
     diplomacy: 0,
-    treasury: 100,
+    treasury: 1000,
     allies: []
 };
 
@@ -26,7 +26,17 @@ function loadStats() {
     const savedStats = localStorage.getItem('playerStats');
     if (savedStats) {
         playerStats = JSON.parse(savedStats);
+        if (window.location.hash.slice(1) == "intro") {
+            playerStats = {
+                military: 5,
+                diplomacy: 15,
+                treasury: 100,
+                allies: []
+            };
+            saveStats();
+        }
     }
+
 }
 function updateStats() {
     saveStats();
