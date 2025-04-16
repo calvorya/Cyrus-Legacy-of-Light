@@ -679,7 +679,10 @@
       "options": [
         {
           "text": "آغاز شورش از درون پارس",
-          "next": "rebellion_start"
+          "next": "rebellion_start",
+          "requires": {
+            "diplomacy": 25
+          }
         },
         {
           "text": "جمع‌آوری متحدان بیشتر",
@@ -707,7 +710,10 @@
       "options": [
         {
           "text": "پیروزی و تاسیس شاهنشاهی",
-          "next": "empire_victory"
+          "next": "empire_victory",
+          "requires": {
+            "diplomacy": 25
+          }
         },
         {
           "text": "تغییر تاکتیک برای حمله به مراکز تدارکاتی ماد",
