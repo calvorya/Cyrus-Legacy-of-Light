@@ -48,7 +48,7 @@ An adventure and narrative game where you play as Cyrus, a hero who must preserv
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/cyrus-legacy-of-light.git
+git clone https://github.com/calvorya/cyrus-legacy-of-light.git
 ```
 
 2. Navigate to the project directory:
@@ -85,11 +85,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact | تماس
 
 For any questions or suggestions, please contact us at:
-- Email: your.email@example.com
-- Twitter: [@cyrusgame](https://twitter.com/cyrusgame)
+- Twitter: [@calvorya](https://twitter.com/calvorya)
 
 <div dir="rtl">
 برای هر سوال یا پیشنهادی، لطفاً با ما تماس بگیرید:
-- ایمیل: your.email@example.com
-- توییتر: [@cyrusgame](https://twitter.com/cyrusgame)
+- توییتر: [@calvorya](https://twitter.com/calvorya)
 </div> 
