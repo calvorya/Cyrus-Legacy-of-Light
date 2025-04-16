@@ -190,100 +190,67 @@ function showNode(nodeId) {
 
     createBackgroundEffects();
 }
-
 const createBackgroundEffects = () => {
     const patterns = ['𐎠', '𐎡', '𐎢', '👑', '⚔️', '🏰', '🗡️', '🛡️', '✨', '🌟'];
     const state = {
         bgContainer: null,
-        isAnimating: false,
         mouseX: window.innerWidth / 2,
-        mouseY: window.innerHeight / 2
+        mouseY: window.innerHeight / 2,
     };
 
-    document.addEventListener('mousemove', (e) => {
-        state.mouseX = e.clientX;
-        state.mouseY = e.clientY;
-    });
+    const updateMouse = ({ clientX, clientY }) => {
+        state.mouseX = clientX;
+        state.mouseY = clientY;
+    };
+
+    document.addEventListener('mousemove', updateMouse);
 
     const createPattern = () => {
         const pattern = document.createElement('span');
         pattern.textContent = patterns[Math.floor(Math.random() * patterns.length)];
-        pattern.classList.add('background-pattern');
-
         const rotation = Math.random() * 360;
-        const randomX = Math.random() * window.innerWidth;
-        const randomY = Math.random() * window.innerHeight;
         const scale = 0.6 + Math.random() * 0.8;
         const duration = 12 + Math.random() * 8;
 
         Object.assign(pattern.style, {
             position: 'fixed',
-            color: 'var(--pattern-color, rgba(255, 215, 0, 0.4))',
+            color: 'rgba(255, 215, 0, 0.4)',
             opacity: '0',
             fontSize: '28px',
-            top: `${randomY}px`,
-            left: `${randomX}px`,
+            top: `${Math.random() * window.innerHeight}px`,
+            left: `${Math.random() * window.innerWidth}px`,
             zIndex: '-1',
             userSelect: 'none',
             pointerEvents: 'none',
             textShadow: '0 0 15px rgba(255, 215, 0, 0.6)',
             transform: `rotate(${rotation}deg) scale(${scale})`,
-            transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
-            animation: `floatToMouse ${duration}s cubic-bezier(0.4, 0, 0.2, 1) infinite`
+            transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
         });
 
-        if (!document.querySelector('#background-animations')) {
-            const styleSheet = document.createElement('style');
-            styleSheet.id = 'background-animations';
-            styleSheet.textContent = `
-                @keyframes floatToMouse {
-                    0% { 
-                        transform: translate(0, 0) rotate(${rotation}deg) scale(${scale});
-                        filter: hue-rotate(0deg);
-                    }
-                    50% { 
-                        transform: translate(calc(${state.mouseX}px - 50%), calc(${state.mouseY}px - 50%)) rotate(${rotation + 180}deg) scale(${scale * 1.2});
-                        filter: hue-rotate(180deg);
-                    }
-                    100% { 
-                        transform: translate(0, 0) rotate(${rotation + 360}deg) scale(${scale});
-                        filter: hue-rotate(360deg);
-                    }
-                }
-            `;
-            document.head.appendChild(styleSheet);
+        if (!document.querySelector('#bg-animations')) {
+            document.head.appendChild(Object.assign(document.createElement('style'), {
+                id: 'bg-animations',
+                textContent: `
+            @keyframes floatToMouse {
+              0% { transform: translate(0, 0) rotate(${rotation}deg) scale(${scale}); filter: hue-rotate(0deg); }
+              50% { transform: translate(calc(${state.mouseX}px - 50%), calc(${state.mouseY}px - 50%)) rotate(${rotation + 180}deg) scale(${scale * 1.2}); filter: hue-rotate(180deg); }
+              100% { transform: translate(0, 0) rotate(${rotation + 360}deg) scale(${scale}); filter: hue-rotate(360deg); }
+            }
+          `,
+            }));
         }
+
+        pattern.style.animation = `floatToMouse ${duration}s cubic-bezier(0.4, 0, 0.2, 1) infinite`;
 
         requestAnimationFrame(() => {
             pattern.style.opacity = '0.6';
         });
 
-        const updatePosition = () => {
-            if (!pattern.isConnected) return;
-
-            const rect = pattern.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-
-            const angleToMouse = Math.atan2(state.mouseY - centerY, state.mouseX - centerX);
-            const distanceToMouse = Math.hypot(state.mouseX - centerX, state.mouseY - centerY);
-
-            const moveX = Math.cos(angleToMouse) * (distanceToMouse * 0.03);
-            const moveY = Math.sin(angleToMouse) * (distanceToMouse * 0.03);
-
-            pattern.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${rotation + (Date.now() / 40)}deg) scale(${scale})`;
-            pattern.style.filter = `hue-rotate(${(Date.now() / 50) % 360}deg)`;
-
-            requestAnimationFrame(updatePosition);
-        };
-
-        updatePosition();
-
         setTimeout(() => {
             if (pattern.isConnected) {
                 pattern.style.opacity = '0';
-                pattern.style.transform = `scale(0.1)`;
-                setTimeout(() => pattern?.remove(), 800);
+                pattern.style.transform = `rotate(${rotation}deg) scale(0.1)`;
+                setTimeout(() => pattern.remove(), 800);
             }
         }, duration * 1000);
 
@@ -292,14 +259,8 @@ const createBackgroundEffects = () => {
 
     const spawnPatterns = () => {
         if (!state.bgContainer) return;
-
-        const numPatterns = 4 + Math.floor(Math.random() * 4);
-        for (let i = 0; i < numPatterns; i++) {
-            setTimeout(() => {
-                state.bgContainer.appendChild(createPattern());
-            }, i * 200);
-        }
-
+        const count = 4 + Math.floor(Math.random() * 4);
+        Array.from({ length: count }, (_, i) => setTimeout(() => state.bgContainer.appendChild(createPattern()), i * 200));
         setTimeout(spawnPatterns, 2500 + Math.random() * 1500);
     };
 
@@ -313,28 +274,25 @@ const createBackgroundEffects = () => {
         Object.assign(state.bgContainer.style, {
             position: 'fixed',
             inset: '0',
-            width: '100vw',
-            height: '100vh',
             zIndex: '-1',
-            overflow: 'hidden',
             pointerEvents: 'none',
             perspective: '1500px',
             transition: 'opacity 0.5s ease',
-            opacity: '0'
+            opacity: '0',
         });
 
         document.body.appendChild(state.bgContainer);
-        requestAnimationFrame(() => {
-            state.bgContainer.style.opacity = '1';
-        });
+        requestAnimationFrame(() => state.bgContainer.style.opacity = '1');
         spawnPatterns();
     };
 
     initializeBackground();
+
     return () => {
+        document.removeEventListener('mousemove', updateMouse);
         if (state.bgContainer) {
             state.bgContainer.style.opacity = '0';
-            setTimeout(() => state.bgContainer?.remove(), 500);
+            setTimeout(() => state.bgContainer.remove(), 500);
         }
     };
 };

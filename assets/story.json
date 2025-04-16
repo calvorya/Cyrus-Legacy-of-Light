@@ -24,13 +24,11 @@
       ],
       "image": [
         "assets/images/intro/1.jpg",
-        "assets/images/intro/2.jpg",
-        "assets/images/intro/3.jpg"
+        "assets/images/intro/2.jpg"
       ],
       "image_text": [
-        "نگاره ایشتوویگو، پادشاه ماد، در حال فرمان دادن و گسیل داشتن هارپاگ برای کشتن کوروش خردسال",
         "نقاشی دوران کودکی کوروش اثر سباستیانو ریچی",
-        "شکست آستیاگ از کوروش (کوروش و هارپاگ در مرکز و آستیاگ در سمت چپ نگاره به‌تصویر کشیده شده‌اند)، نقاشی از قرن ۱۸ میلادی، موزه هنرهای زیبای بوستون."
+        "نگاره ایشتوویگو، پادشاه ماد، در حال فرمان دادن و گسیل داشتن هارپاگ برای کشتن کوروش خردسال"
       ]
     },
     "negotiate": {
@@ -43,7 +41,10 @@
         },
         {
           "text": "از موضع قدرت وارد مذاکره شو",
-          "next": "strong_negotiation"
+          "next": "strong_negotiation",
+          "requires": {
+            "diplomacy": 25
+          }
         }
       ],
       "effects": {
@@ -259,6 +260,53 @@
         "diplomacy": 10
       }
     },
+    "regroup": {
+      "title": "جمع‌آوری نیروها",
+      "text": "کوروش و نیروهایش در کوهستان پناه می‌گیرند و به جنگ چریکی روی می‌آورند.",
+      "options": [
+        {
+          "text": "حملات پراکنده به کاروان‌های ماد",
+          "next": "guerrilla_warfare"
+        },
+        {
+          "text": "جمع‌آوری نیرو برای حمله بزرگ",
+          "next": "gather_forces"
+        }
+      ],
+      "effects": {
+        "diplomacy": 10
+      }
+    },
+    "gather_forces": {
+      "title": "جمع‌آوری نیروها",
+      "text": "کوروش و نیروهایش در کوهستان پناه می‌گیرند و به جنگ چریکی روی می‌آورند.",
+      "options": [
+        {
+          "text": "حملات پراکنده به کاروان‌های ماد",
+          "next": "guerrilla_warfare"
+        }
+      ],
+      "effects": {
+        "diplomacy": 10
+      }
+    },
+    "guerrilla_warfare": {
+      "title": "حملات پراکنده",
+      "text": "کوروش و نیروهایش در کوهستان پناه می‌گیرند و به جنگ چریکی روی می‌آورند.",
+      "options": [
+        {
+          "text": "پناه در کوهستان",
+          "next": "mountain_retreat"
+        },
+        {
+          "text": "ارتباط با هارپاگ",
+          "next": "harpagus"
+        }
+      ],
+      "effects": {
+        "diplomacy": 10
+      }
+    },
     "mountain_retreat": {
       "title": "پناه در کوهستان",
       "text": "کوروش و نیروهایش در کوهستان پناه می‌گیرند و به جنگ چریکی روی می‌آورند.",
@@ -360,15 +408,13 @@
           "text": "حمله‌ی مستقیم به شهرهای ماد",
           "next": "reckless_attack",
           "requires": {
-            "diplomacy": 10
+            "diplomacy": 25,
+            "military": 25
           }
         },
         {
           "text": "تمرکز بر آموزش و تجهیز ارتش",
-          "next": "army_training",
-          "requires": {
-            "diplomacy": 10
-          }
+          "next": "army_training"
         }
       ],
       "effects": {
@@ -385,7 +431,23 @@
         },
         {
           "text": "گسترش آموزش‌ها به متحدان",
-          "next": "ally_training"
+          "next": "ally_training",
+          "requires": {
+            "diplomacy": 10
+          }
+        }
+      ],
+      "effects": {
+        "military": 10
+      }
+    },
+    "ally_training": {
+      "title": "آموزش متحدان",
+      "text": "کوروش زمان را صرف آموزش و تجهیز متحدان می‌کند. سربازان با تاکتیک‌های جدید آشنا می‌شوند.",
+      "options": [
+        {
+          "text": "حمله با ارتش آموزش‌دیده",
+          "next": "trained_attack"
         }
       ],
       "effects": {
@@ -431,7 +493,10 @@
         "تصویر یک زن ایلامی",
         "تندیس مسین خدای زرین‌دست",
         "دسته عاج چاقوی جبل الاراک"
-      ]
+      ],
+      "effects": {
+        "diplomacy": 10
+      }
     },
     "great_victory": {
       "title": "پیروزی بزرگ",
@@ -439,7 +504,10 @@
       "options": [
         {
           "text": "پیروزی و تاسیس شاهنشاهی",
-          "next": "empire_victory"
+          "next": "empire_victory",
+          "requires": {
+            "diplomacy": 50
+          }
         },
         {
           "text": "تغییر تاکتیک برای حمله به مراکز تدارکاتی ماد",
@@ -456,11 +524,17 @@
       "options": [
         {
           "text": "آغاز نبرد با ارتش متحد قدرتمند",
-          "next": "great_victory"
+          "next": "great_victory",
+          "requires": {
+            "diplomacy": 50
+          }
         },
         {
           "text": "گسترش اتحاد به سمت شرق",
-          "next": "eastern_expansion"
+          "next": "eastern_expansion",
+          "requires": {
+            "diplomacy": 25
+          }
         }
       ],
       "effects": {
@@ -514,7 +588,23 @@
         },
         {
           "text": "عقب‌نشینی تاکتیکی برای تحلیل نیروهای دشمن",
-          "next": "draw_out"
+          "next": "draw_out",
+          "requires": {
+            "diplomacy": 10
+          }
+        }
+      ],
+      "effects": {
+        "diplomacy": 10
+      }
+    },
+    "draw_out": {
+      "title": "عقب‌نشینی تاکتیکی",
+      "text": "کوروش با عقب‌نشینی تاکتیکی، نیروهای ماد را به طور موقت جمع‌آوری می‌کند.",
+      "options": [
+        {
+          "text": "هجوم نهایی با فرماندهی کوروش",
+          "next": "final_assault"
         }
       ],
       "effects": {
@@ -552,10 +642,12 @@
         }
       ],
       "image": [
-        "assets/images/empire_victory/1.svg"
+        "assets/images/empire_victory/1.svg",
+        "assets/images/empire_victory/1.jpg"
       ],
       "image_text": [
-        "درفش هخامنشیان در دورهٔ کوروش"
+        "درفش هخامنشیان در دورهٔ کوروش",
+        "شکست آستیاگ از کوروش (کوروش و هارپاگ در مرکز و آستیاگ در سمت چپ نگاره به‌تصویر کشیده شده‌اند)، نقاشی از قرن ۱۸ میلادی، موزه هنرهای زیبای بوستون."
       ],
       "effects": {
         "military": 10
@@ -696,13 +788,19 @@
       "options": [
         {
           "text": "حمله به مراکز تدارکاتی ماد",
-          "next": "supply_raid"
+          "next": "supply_raid",
+          "requires": {
+            "diplomacy": 25
+          }
         },
         {
           "text": "تغییر تاکتیک برای حمله به مراکز تدارکاتی ماد",
           "next": "supply_raid"
         }
-      ]
+      ],
+      "effects": {
+        "diplomacy": 10
+      }
     },
     "supply_raid": {
       "title": "حمله به مراکز تدارکاتی ماد",
@@ -717,9 +815,25 @@
         },
         {
           "text": "تغییر تاکتیک برای حمله به مراکز تدارکاتی ماد",
+          "next": "edit_plan"
+        }
+      ],
+      "effects": {
+        "diplomacy": 10
+      }
+    },
+    "edit_plan": {
+      "title": "تغییر نقشه",
+      "text": "کوروش تصمیم می‌گیرد نقشه‌ای جدید برای حمله به ماد طراحی کند.",
+      "options": [
+        {
+          "text": "حمله به مراکز تدارکاتی ماد",
           "next": "supply_raid"
         }
-      ]
+      ],
+      "effects": {
+        "diplomacy": 10
+      }
     }
   }
 }
