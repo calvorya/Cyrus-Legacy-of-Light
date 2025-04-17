@@ -146,6 +146,20 @@ body {
     border-color: var(--accent-copper);
 }
 
+#true-history {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    padding: 1rem;
+    border-radius: 10px;
+}
+#true-history p {
+    font-size: 1.5em;
+    color: var(--accent-gold);
+    cursor: pointer;
+}
+
 #image {
     width: 20%;
     height: 100%;

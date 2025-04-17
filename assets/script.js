@@ -118,6 +118,24 @@ function showNode(nodeId) {
     const optionsContainer = document.getElementById('options');
     optionsContainer.innerHTML = '';
 
+    if (currentNode.isTrueHistory) {
+        const trueHistoryContainer = document.getElementById('true-history');
+        trueHistoryContainer.innerHTML = '';
+        const trueHistoryText = document.createElement('p');
+        trueHistoryText.innerText = '💡';
+        trueHistoryText.title = currentNode.isTrueHistory == "false" ? "این رویداد در تاریخ واقعی رخ نداده است. و فقط برای جذابیت به کار رفته است." : "این رویداد در تاریخ واقعی رخ داده است.";
+        trueHistoryText.style.cursor = 'pointer';
+        trueHistoryText.onclick = () => {
+            if (currentNode.trueHistoryLink) {
+                window.open(currentNode.trueHistoryLink, '_blank');
+            }
+            else {
+                alert(currentNode.isTrueHistory);
+            }
+        };
+        trueHistoryContainer.appendChild(trueHistoryText);
+    }
+
     currentNode.options.forEach(opt => {
         const btn = document.createElement('button');
         btn.className = 'option';
