@@ -134,7 +134,7 @@ function showNode(nodeId) {
     const optionsContainer = document.getElementById('options');
     optionsContainer.innerHTML = '';
 
-    if (currentNode.isTrueHistory) {
+    if (currentNode.isTrueHistory && currentNode.isTrueHistory != undefined) {
         const trueHistoryContainer = document.getElementById('true-history');
         trueHistoryContainer.innerHTML = '';
         const trueHistoryText = document.createElement('p');
@@ -150,6 +150,9 @@ function showNode(nodeId) {
             }
         };
         trueHistoryContainer.appendChild(trueHistoryText);
+    }
+    else {
+        document.getElementById('true-history').innerHTML = "";
     }
 
     currentNode.options.forEach(opt => {
@@ -238,7 +241,7 @@ const createBackgroundEffects = () => {
         document.querySelector(".pattern").forEach(el => el.style.animationDelay = `${Math.random() * 2}s`);
         return;
     };
-    const patterns = ['👑', '⚔️', '🏰', '🗡️', '🛡️', '✨', '🌟', ''];
+    const patterns = ['👑', '⚔️', '🏰', '🗡️', '🛡️'];
 
     const patternContainer = document.createElement('div');
     patternContainer.className = 'pattern-container';
