@@ -501,13 +501,11 @@
       ],
       "image": [
         "assets/images/unite/1.jpg",
-        "assets/images/unite/2.jpg",
-        "assets/images/unite/3.jpg"
+        "assets/images/unite/2.jpg"
       ],
       "image_text": [
         "تصویر یک زن ایلامی",
-        "تندیس مسین خدای زرین‌دست",
-        "دسته عاج چاقوی جبل الاراک"
+        "تندیس مسین خدای زرین‌دست"
       ],
       "effects": {
         "diplomacy": 10,
