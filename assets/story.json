@@ -194,7 +194,11 @@
       "options": [
         {
           "text": "تشکیل اتحادیه با ایلام و قبایل پارسی برای مقابله",
-          "next": "unite"
+          "next": "unite",
+          "requires": {
+            "diplomacy": 20,
+            "influence": 10
+          }
         },
         {
           "text": "تعلل و ارسال هدیه برای آرام کردن آستیاگ",
@@ -203,6 +207,13 @@
         {
           "text": "پیشنهاد تقسیم قدرت به بزرگان ماد",
           "next": "power_sharing"
+        },
+        {
+          "text": "پیشنهاد تشکیل شبکه اطلاعاتی در ماد",
+          "next": "spy_network",
+          "requires": {
+            "diplomacy": 20
+          }
         }
       ],
       "image": [
@@ -448,6 +459,39 @@
         "military": 10
       }
     },
+    "reckless_attack": {
+      "title": "حمله غافلگیرانه",
+      "text": "کوروش و نیروهایش به سرزمین ماد حمله می‌کنند و ماد را شکست می‌دهند.",
+      "options": [
+        {
+          "text": "حمله به مراکز تدارکاتی ماد",
+          "next": "supply_raid",
+          "requires": {
+            "influence": 15,
+            "military": 25
+          }
+        },
+        {
+          "text": "تمرکز بر آموزش و تجهیز ارتش",
+          "next": "army_training",
+          "requires": {
+            "influence": 10,
+            "military": 25
+          }
+        },
+        {
+          "text": "شکست سخت به دلیل ناهماهنگی",
+          "next": "total_defeat",
+          "requires": {
+            "military": 10,
+            "influence": -10
+          }
+        }
+      ],
+      "effects": {
+        "influence": -10
+      }
+    },
     "army_training": {
       "title": "آموزش ارتش",
       "text": "کوروش زمان را صرف آموزش و تجهیز ارتش می‌کند. سربازان با تاکتیک‌های جدید آشنا می‌شوند.",
@@ -504,7 +548,10 @@
       "options": [
         {
           "text": "حرکت به‌سوی نبرد با حمایت گسترده",
-          "next": "rebellion_start"
+          "next": "rebellion_start",
+          "requires": {
+            "military": 20
+          }
         },
         {
           "text": "تقویت بیشتر اتحاد با مذاکرات تکمیلی",
@@ -537,7 +584,8 @@
           "text": "پیروزی و تاسیس شاهنشاهی",
           "next": "empire_victory",
           "requires": {
-            "diplomacy": 50
+            "diplomacy": 50,
+            "influence": 25
           }
         },
         {
@@ -603,6 +651,13 @@
         {
           "text": "جمع‌آوری اطلاعات از دربار ماد",
           "next": "gather_intel"
+        },
+        {
+          "text": "ایجاد شبکه جاسوسی در اکباتان",
+          "next": "spy_network",
+          "requires": {
+            "diplomacy": 15
+          }
         }
       ],
       "image": [
@@ -618,7 +673,11 @@
       "options": [
         {
           "text": "حمله در میدان پاسارگاد با حمایت دوگانه",
-          "next": "great_victory"
+          "next": "great_victory",
+          "requires": {
+            "military": 25,
+            "diplomacy": 25
+          }
         },
         {
           "text": "تغییر برنامه در آخرین لحظه",
@@ -642,10 +701,14 @@
       "options": [
         {
           "text": "پیروزی و تاسیس شاهنشاهی",
-          "next": "empire_victory"
+          "next": "empire_victory",
+          "requires": {
+            "military": 50,
+            "diplomacy": 50
+          }
         },
         {
-          "text": "شکست و تبعید",
+          "text": "اعلام شکست و تبعید",
           "next": "exile_ending"
         }
       ],
@@ -660,13 +723,30 @@
       "options": [
         {
           "text": "هجوم نهایی با فرماندهی کوروش",
-          "next": "final_assault"
+          "next": "final_assault",
+          "requires": {
+            "military": 50,
+            "diplomacy": 50,
+            "influence": 25
+          }
         },
         {
           "text": "عقب‌نشینی تاکتیکی برای تحلیل نیروهای دشمن",
           "next": "draw_out",
           "requires": {
             "diplomacy": 10
+          }
+        },
+        {
+          "text": "تقویت اتحاد با سرزمین‌های شرقی",
+          "next": "unite"
+        },
+        {
+          "text": "جاسوسی در دربار ماد",
+          "next": "spy_network",
+          "requires": {
+            "diplomacy": 10,
+            "influence": 10
           }
         }
       ],
@@ -681,11 +761,79 @@
       "options": [
         {
           "text": "هجوم نهایی با فرماندهی کوروش",
-          "next": "final_assault"
+          "next": "final_assault",
+          "requires": {
+            "diplomacy": 35
+          }
+        },
+        {
+          "text": "تقویت اتحاد با سرزمین‌های شرقی",
+          "next": "unite"
         }
       ],
       "effects": {
         "diplomacy": 10
+      }
+    },
+    "spy_network": {
+      "title": "شبکه جاسوسی",
+      "text": "کوروش گروهی از وفاداران خود را برای نفوذ در دربار اکباتان اعزام می‌کند. این عملیات خطرناک می‌تواند اطلاعات حیاتی از وضعیت ارتش ماد را فراهم کند.",
+      "options": [
+        {
+          "text": "دریافت اطلاعات دقیق درباره نیروهای دشمن",
+          "next": "spy_success",
+          "requires": {
+            "diplomacy": 25,
+            "influence": 10
+          }
+        },
+        {
+          "text": "انجام عملیات بدون اطلاعات کامل",
+          "next": "spy_failure"
+        }
+      ],
+      "effects": {
+        "skills": [
+          "اطلاعات محرمانه"
+        ]
+      }
+    },
+    "spy_success": {
+      "title": "موفقیت عملیات جاسوسی",
+      "text": "شبکه جاسوسی کوروش اطلاعات مهمی از ترکیب و تحرکات ارتش ماد در اختیارش می‌گذارد. این اطلاعات در طراحی نقشه جنگی تعیین‌کننده خواهد بود.",
+      "options": [
+        {
+          "text": "استفاده از اطلاعات در طراحی نقشه جنگی",
+          "next": "strategic_plan",
+          "requires": {
+            "military": 10
+          }
+        }
+      ],
+      "effects": {
+        "diplomacy": 5,
+        "influence": 15,
+        "skills": [
+          "جاسوسی حرفه‌ای"
+        ]
+      }
+    },
+    "spy_failure": {
+      "title": "شکست عملیات جاسوسی",
+      "text": "یکی از مأموران دستگیر می‌شود و نام کوروش را فاش می‌کند. آستیاگ آماده‌باش کامل اعلام می‌کند.",
+      "options": [
+        {
+          "text": "آغاز شورش پیش از موعد",
+          "next": "rebellion_start"
+        },
+        {
+          "text": "بازگشت به پارس و بازنگری در نقشه‌ها",
+          "next": "council"
+        }
+      ],
+      "effects": {
+        "diplomacy": -10,
+        "influence": -20
       }
     },
     "final_assault": {
@@ -772,6 +920,20 @@
           "next": "intro"
         }
       ]
+    },
+    "total_defeat": {
+      "title": "شکست کامل",
+      "text": "کوروش با ارتشی ناهماهنگ و بدون حمایت کافی به ماد حمله می‌کند. ارتشش شکست می‌خورد و خودش اسیر یا کشته می‌شود. شورش پارس در نطفه خفه می‌شود.",
+      "options": [
+        {
+          "text": "شروع دوباره",
+          "next": "intro"
+        }
+      ],
+      "effects": {
+        "military": -999,
+        "influence": -999
+      }
     },
     "end_exile": {
       "title": "پایان فصل اول: آتش زیر خاکستر",
@@ -930,8 +1092,11 @@
           }
         },
         {
-          "text": "تغییر تاکتیک برای حمله به مراکز تدارکاتی ماد",
-          "next": "supply_raid"
+          "text": "از موضع قدرت وارد مذاکره شو",
+          "next": "council",
+          "requires": {
+            "diplomacy": 25
+          }
         }
       ],
       "effects": {
@@ -946,25 +1111,13 @@
           "text": "پیروزی و تاسیس شاهنشاهی",
           "next": "empire_victory",
           "requires": {
+            "military": 25,
             "diplomacy": 25
           }
         },
         {
           "text": "تغییر تاکتیک برای حمله به مراکز تدارکاتی ماد",
-          "next": "edit_plan"
-        }
-      ],
-      "effects": {
-        "diplomacy": 10
-      }
-    },
-    "edit_plan": {
-      "title": "تغییر نقشه",
-      "text": "کوروش تصمیم می‌گیرد نقشه‌ای جدید برای حمله به ماد طراحی کند.",
-      "options": [
-        {
-          "text": "حمله به مراکز تدارکاتی ماد",
-          "next": "supply_raid"
+          "next": "plan_change"
         }
       ],
       "effects": {

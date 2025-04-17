@@ -5,7 +5,8 @@ let playerStats = {
     diplomacy: 15,
     treasury: 100,
     allies: [],
-    skills: []
+    skills: [],
+    influence: 0
 };
 
 async function loadStory() {
@@ -62,6 +63,12 @@ function updateStats() {
                 </div>
             </div>
             <div class="stat">
+                <span class="stat-label">نفوذ:</span>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${(playerStats.influence / 100) * 100}%"></div>
+                </div>
+            </div>
+            <div class="stat">
                 <span class="stat-label">متحدان:</span>
                 <div class="allies-container">
                     <span class="stat-value">${playerStats.allies.join(', ') || 'هیچ'}</span>
@@ -85,8 +92,9 @@ function updateStats() {
         updateProgressBar(1, playerStats.military, 100);
         updateProgressBar(2, playerStats.diplomacy, 100);
         updateProgressBar(3, playerStats.treasury, 1000);
-        statsContainer.querySelector('.stat:nth-child(4) .stat-value').textContent = playerStats.allies.join(', ') || 'هیچ';
-        statsContainer.querySelector('.stat:nth-child(5) .stat-value').textContent = playerStats.skills.join(', ') || 'هیچ';
+        updateProgressBar(4, playerStats.influence, 100);
+        statsContainer.querySelector('.stat:nth-child(5) .stat-value').textContent = playerStats.allies.join(', ') || 'هیچ';
+        statsContainer.querySelector('.stat:nth-child(6) .stat-value').textContent = playerStats.skills.join(', ') || 'هیچ';
     }
 }
 function slideTransition() {
@@ -114,7 +122,8 @@ function showNode(nodeId) {
             diplomacy: 15,
             treasury: 100,
             allies: [],
-            skills: []
+            skills: [],
+            influence: 0
         };
         saveStats();
     }
@@ -124,6 +133,11 @@ function showNode(nodeId) {
         if (currentNode.effects.military) playerStats.military += currentNode.effects.military;
         if (currentNode.effects.diplomacy) playerStats.diplomacy += currentNode.effects.diplomacy;
         if (currentNode.effects.treasury) playerStats.treasury += currentNode.effects.treasury;
+        if (currentNode.effects.influence) playerStats.influence += currentNode.effects.influence;
+        if (currentNode.effects.treasury < 0) playerStats.treasury = 0;
+        if (currentNode.effects.military < 0) playerStats.military = 0;
+        if (currentNode.effects.diplomacy < 0) playerStats.diplomacy = 0;
+        if (currentNode.effects.influence < 0) playerStats.influence = 0;
         if (currentNode.effects.allies) playerStats.allies = [...new Set([...playerStats.allies, ...currentNode.effects.allies])];
         if (currentNode.effects.skills) playerStats.skills = [...new Set([...playerStats.skills, ...currentNode.effects.skills])];
     }
@@ -146,7 +160,7 @@ function showNode(nodeId) {
                 window.open(currentNode.trueHistoryLink, '_blank');
             }
             else {
-                showModal(currentNode.isTrueHistory);
+                showModal(currentNode.isTrueHistory == "false" ? "این رویداد در تاریخ واقعی رخ نداده است. و فقط برای جذابیت به کار رفته است." : currentNode.isTrueHistory);
             }
         };
         trueHistoryContainer.appendChild(trueHistoryText);
@@ -162,15 +176,21 @@ function showNode(nodeId) {
         if (opt.requires) {
             const canChoose = Object.entries(opt.requires).every(([stat, value]) => playerStats[stat] >= value);
             if (!canChoose) {
-                btn.classList.add('disabled');
-                btn.disabled = true;
                 btn.title = 'نیازمندی‌های کافی را ندارید';
                 btn.style.cursor = 'not-allowed';
+                btn.classList.add('disabled');
             }
         }
 
         btn.innerText = opt.text;
-        btn.onclick = () => showNode(opt.next);
+        btn.onclick = (event) => {
+            if (event.target.classList.contains('disabled')) {
+                showModal("نیازمندی‌های کافی را ندارید");
+            }
+            else {
+                showNode(opt.next);
+            }
+        };
         optionsContainer.appendChild(btn);
     });
 
@@ -276,9 +296,15 @@ window.addEventListener('hashchange', () => {
 const hash = window.location.hash.slice(1);
 if (hash) {
     document.getElementById('start-game').innerHTML = "ادامه بازی";
+    document.getElementById('restart-game').style.display = "";
 }
+
 
 document.getElementById("start-game").onclick = () => {
     loadStats();
     loadStory();
+}
+document.getElementById("restart-game").onclick = () => {
+    window.location.hash = "";
+    window.location.reload();
 }
