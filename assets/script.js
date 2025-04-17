@@ -4,7 +4,8 @@ let playerStats = {
     military: 5,
     diplomacy: 15,
     treasury: 100,
-    allies: []
+    allies: [],
+    skills: []
 };
 
 async function loadStory() {
@@ -66,6 +67,12 @@ function updateStats() {
                     <span class="stat-value">${playerStats.allies.join(', ') || 'هیچ'}</span>
                 </div>
             </div>
+            <div class="stat">
+                <span class="stat-label">مهارت‌ها:</span>
+                <div class="skills-container">
+                    <span class="stat-value">${playerStats.skills.join(', ') || 'هیچ'}</span>
+                </div>
+            </div>
         `;
 
         document.body.insertBefore(container, document.getElementById('text'));
@@ -79,6 +86,7 @@ function updateStats() {
         updateProgressBar(2, playerStats.diplomacy, 100);
         updateProgressBar(3, playerStats.treasury, 1000);
         statsContainer.querySelector('.stat:nth-child(4) .stat-value').textContent = playerStats.allies.join(', ') || 'هیچ';
+        statsContainer.querySelector('.stat:nth-child(5) .stat-value').textContent = playerStats.skills.join(', ') || 'هیچ';
     }
 }
 
@@ -89,7 +97,8 @@ function showNode(nodeId) {
             military: 5,
             diplomacy: 15,
             treasury: 100,
-            allies: []
+            allies: [],
+            skills: []
         };
         saveStats();
     }
@@ -100,6 +109,7 @@ function showNode(nodeId) {
         if (currentNode.effects.diplomacy) playerStats.diplomacy += currentNode.effects.diplomacy;
         if (currentNode.effects.treasury) playerStats.treasury += currentNode.effects.treasury;
         if (currentNode.effects.allies) playerStats.allies = [...new Set([...playerStats.allies, ...currentNode.effects.allies])];
+        if (currentNode.effects.skills) playerStats.skills = [...new Set([...playerStats.skills, ...currentNode.effects.skills])];
     }
 
     updateStats();
@@ -147,7 +157,6 @@ function showNode(nodeId) {
             imageContainer.style.display = 'block';
         }
         const images = imageContainer.querySelectorAll('img');
-        let imageText = null;
         let imageTextCount = 0;
         images.forEach(img => {
             let imageTextInnerText = currentNode.image_text[imageTextCount] || "تصویر";
@@ -188,115 +197,38 @@ function showNode(nodeId) {
     }
     catch { }
 
-    createBackgroundEffects();
 }
+
 const createBackgroundEffects = () => {
-    const patterns = ['𐎠', '𐎡', '𐎢', '👑', '⚔️', '🏰', '🗡️', '🛡️', '✨', '🌟'];
-    const state = {
-        bgContainer: null,
-        mouseX: window.innerWidth / 2,
-        mouseY: window.innerHeight / 2,
+    if (document.querySelector('.pattern-container')) {
+        document.querySelector(".pattern").forEach(el => el.style.animationDelay = `${Math.random() * 2}s`);
+        return;
     };
+    const patterns = ['👑', '⚔️', '🏰', '🗡️', '🛡️', '✨', '🌟', ''];
 
-    const updateMouse = ({ clientX, clientY }) => {
-        state.mouseX = clientX;
-        state.mouseY = clientY;
-    };
+    const patternContainer = document.createElement('div');
+    patternContainer.className = 'pattern-container';
 
-    document.addEventListener('mousemove', updateMouse);
+    patterns.forEach(pattern => {
+        const patternElement = document.createElement('span');
+        patternElement.className = 'pattern';
+        patternElement.textContent = pattern;
+        patternElement.style.fontSize = `${Math.random() * 2 + 1}em`;
+        patternElement.style.left = `${Math.random() * 100}%`;
+        patternElement.style.top = `${Math.random() * 100}%`;
+        patternElement.style.animationDelay = `${Math.random() * 5}s`;
+        patternElement.style.rotate = `${Math.random() * 360}deg`;
+        patternElement.style.setProperty('--random-x', `${Math.random() * 1000}`);
+        patternElement.style.setProperty('--random-y', `${Math.random() * 1000}`);
+        patternElement.style.transform = `translate(${Math.random() * 100}px, ${Math.random() * 100}px)`;
+        patternContainer.appendChild(patternElement);
+    });
 
-    const createPattern = () => {
-        const pattern = document.createElement('span');
-        pattern.textContent = patterns[Math.floor(Math.random() * patterns.length)];
-        const rotation = Math.random() * 360;
-        const scale = 0.6 + Math.random() * 0.8;
-        const duration = 12 + Math.random() * 8;
-
-        Object.assign(pattern.style, {
-            position: 'fixed',
-            color: 'rgba(255, 215, 0, 0.4)',
-            opacity: '0',
-            fontSize: '28px',
-            top: `${Math.random() * window.innerHeight}px`,
-            left: `${Math.random() * window.innerWidth}px`,
-            zIndex: '-1',
-            userSelect: 'none',
-            pointerEvents: 'none',
-            textShadow: '0 0 15px rgba(255, 215, 0, 0.6)',
-            transform: `rotate(${rotation}deg) scale(${scale})`,
-            transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
-        });
-
-        if (!document.querySelector('#bg-animations')) {
-            document.head.appendChild(Object.assign(document.createElement('style'), {
-                id: 'bg-animations',
-                textContent: `
-            @keyframes floatToMouse {
-              0% { transform: translate(0, 0) rotate(${rotation}deg) scale(${scale}); filter: hue-rotate(0deg); }
-              50% { transform: translate(calc(${state.mouseX}px - 50%), calc(${state.mouseY}px - 50%)) rotate(${rotation + 180}deg) scale(${scale * 1.2}); filter: hue-rotate(180deg); }
-              100% { transform: translate(0, 0) rotate(${rotation + 360}deg) scale(${scale}); filter: hue-rotate(360deg); }
-            }
-          `,
-            }));
-        }
-
-        pattern.style.animation = `floatToMouse ${duration}s cubic-bezier(0.4, 0, 0.2, 1) infinite`;
-
-        requestAnimationFrame(() => {
-            pattern.style.opacity = '0.6';
-        });
-
-        setTimeout(() => {
-            if (pattern.isConnected) {
-                pattern.style.opacity = '0';
-                pattern.style.transform = `rotate(${rotation}deg) scale(0.1)`;
-                setTimeout(() => pattern.remove(), 800);
-            }
-        }, duration * 1000);
-
-        return pattern;
-    };
-
-    const spawnPatterns = () => {
-        if (!state.bgContainer) return;
-        const count = 4 + Math.floor(Math.random() * 4);
-        Array.from({ length: count }, (_, i) => setTimeout(() => state.bgContainer.appendChild(createPattern()), i * 200));
-        setTimeout(spawnPatterns, 2500 + Math.random() * 1500);
-    };
-
-    const initializeBackground = () => {
-        if (state.bgContainer) {
-            state.bgContainer.style.opacity = '0';
-            setTimeout(() => state.bgContainer.remove(), 500);
-        }
-
-        state.bgContainer = document.createElement('div');
-        Object.assign(state.bgContainer.style, {
-            position: 'fixed',
-            inset: '0',
-            zIndex: '-1',
-            pointerEvents: 'none',
-            perspective: '1500px',
-            transition: 'opacity 0.5s ease',
-            opacity: '0',
-        });
-
-        document.body.appendChild(state.bgContainer);
-        requestAnimationFrame(() => state.bgContainer.style.opacity = '1');
-        spawnPatterns();
-    };
-
-    initializeBackground();
-
-    return () => {
-        document.removeEventListener('mousemove', updateMouse);
-        if (state.bgContainer) {
-            state.bgContainer.style.opacity = '0';
-            setTimeout(() => state.bgContainer.remove(), 500);
-        }
-    };
+    document.body.appendChild(patternContainer);
 };
-
+window.addEventListener('load', () => {
+    createBackgroundEffects();
+});
 window.addEventListener('hashchange', () => {
     const hash = window.location.hash.slice(1);
     if (hash && story.nodes[hash]) {
