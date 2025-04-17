@@ -221,7 +221,8 @@
         "allies": [
           "قبایل پارسی"
         ]
-      }
+      },
+      "isTrueHistory": "«بر پایه ساختار قبیله‌ای و سنت‌های شفاهی رایج، حضور بزرگان برای مشورت با پادشاه قابل استناد و متعارف بوده است.»"
     },
     "power_sharing": {
       "title": "تقسیم قدرت",
@@ -547,7 +548,9 @@
       "effects": {
         "military": 10,
         "diplomacy": 10
-      }
+      },
+      "isTrueHistory": "true",
+      "trueHistoryLink": "https://fa.wikipedia.org/wiki/کوروش_دوم"
     },
     "strengthen_alliance": {
       "title": "تحکیم اتحاد",

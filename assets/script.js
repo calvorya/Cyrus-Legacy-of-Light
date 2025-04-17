@@ -89,9 +89,25 @@ function updateStats() {
         statsContainer.querySelector('.stat:nth-child(5) .stat-value').textContent = playerStats.skills.join(', ') || 'هیچ';
     }
 }
-
+function slideTransition() {
+    document.getElementById('game-container').style.animation = 'slide-transition 0.5s ease-in-out';
+    setTimeout(() => {
+        document.getElementById('game-container').style.animation = 'none';
+    }, 500);
+}
+function showModal(text) {
+    document.getElementById('modal-text').innerText = text;
+    document.getElementById('modal').style.display = 'block';
+    setTimeout(() => {
+        document.getElementById('modal').style.display = 'none';
+    }, 5000);
+    document.getElementById('modal-close').onclick = () => {
+        document.getElementById('modal').style.display = 'none';
+    }
+}
 function showNode(nodeId) {
     window.location.hash = nodeId;
+    slideTransition();
     if (window.location.hash.slice(1) == "intro") {
         playerStats = {
             military: 5,
@@ -130,7 +146,7 @@ function showNode(nodeId) {
                 window.open(currentNode.trueHistoryLink, '_blank');
             }
             else {
-                alert(currentNode.isTrueHistory);
+                showModal(currentNode.isTrueHistory);
             }
         };
         trueHistoryContainer.appendChild(trueHistoryText);
